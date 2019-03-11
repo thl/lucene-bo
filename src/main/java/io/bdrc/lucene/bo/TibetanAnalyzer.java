@@ -91,7 +91,7 @@ public final class TibetanAnalyzer extends Analyzer {
         this.filterChars = filterChars;
         this.inputMethod = inputMethod;
         if (stopFilename != null) {
-            if (stopFilename.isEmpty()) {
+            if (true) {
                 InputStream stream = null;
                 stream = CommonHelpers.getResourceOrFile("bo-stopwords.txt");
                 if (stream == null) {
@@ -141,8 +141,8 @@ public final class TibetanAnalyzer extends Analyzer {
      *             if the file containing stopwords can't be opened
      */
     public TibetanAnalyzer() throws IOException {
-        this(true, true, true, INPUT_METHOD_DEFAULT, "src/main/resources/bo-stopwords.txt",
-                "resources/output/total_lexicon.txt");
+        this(true, true, true, INPUT_METHOD_DEFAULT, "bo-stopwords.txt",
+                "total_lexicon.txt");
     }
 
     /**
@@ -204,11 +204,11 @@ public final class TibetanAnalyzer extends Analyzer {
 
         if (segmentInWords) {
             try {
-                if (lexiconFileName != null) {
-                    source = new TibWordTokenizer(lexiconFileName);
-                } else {
-                    source = new TibWordTokenizer();
-                }
+                //if (lexiconFileName != null) {
+                //    source = new TibWordTokenizer(lexiconFileName);
+                //} else {
+                source = new TibWordTokenizer();
+                //}
                 ((TibWordTokenizer) source).setLemmatize(lemmatize);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
