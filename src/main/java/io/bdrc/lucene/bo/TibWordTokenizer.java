@@ -139,7 +139,7 @@ public final class TibWordTokenizer extends Tokenizer {
     }
 
     private int bufferIndex = 0, finalOffset = 0;
-    private static final int MAX_WORD_LEN = 255;
+    public static final int MAX_WORD_LEN = 255;
 
     private RollingCharBuffer ioBuffer;
     private int tokenLength;
