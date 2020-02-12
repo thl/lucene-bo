@@ -1,19 +1,19 @@
 /*******************************************************************************
  * Copyright (c) 2017 Buddhist Digital Resource Center (BDRC)
- * 
- * If this file is a derivation of another work the license header will appear 
- * below; otherwise, this work is licensed under the Apache License, Version 2.0 
- * (the "License"); you may not use this file except in compliance with the 
+ *
+ * If this file is a derivation of another work the license header will appear
+ * below; otherwise, this work is licensed under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with the
  * License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.lang.ArrayIndexOutOfBoundsException;
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -37,7 +38,7 @@ import io.bdrc.lucene.stemmer.Trie;
 
 /**
  * A maximal-matching word tokenizer for Tibetan that uses a {@link Trie}.
- * 
+ *
  * <p>
  * Takes a syllable at a time and returns the longest sequence of syllable that
  * form a word within the Trie.<br>
@@ -54,9 +55,9 @@ import io.bdrc.lucene.stemmer.Trie;
  * returned every time the sequence དོན + གྲུབ is found.<br>
  * The sentence སེམས་ཅན་གྱི་དོན་གྲུབ་པར་ཤོག will be tokenized into "སེམས་ཅན +
  * གྱི + དོན་གྲུབ + པར + ཤོག" (སེམས་ཅན + གྱི + དོན + གྲུབ་པར + ཤོག expected).
- * 
+ *
  * Derived from Lucene 6.4.1 analysis.util.CharTokenizer
- * 
+ *
  * @author Élie Roux
  * @author Drupchen
  *
@@ -76,7 +77,7 @@ public final class TibWordTokenizer extends Tokenizer {
     /**
      * Constructs a TibWordTokenizer using a default lexicon file (here
      * "resource/output/total_lexicon.txt")
-     * 
+     *
      * @throws IOException
      *             the file containing the lexicon cannot be read
      */
@@ -102,7 +103,7 @@ public final class TibWordTokenizer extends Tokenizer {
 
     /**
      * Constructs a TibWordTokenizer using a given trie
-     * 
+     *
      * @param trie
      *            built with BuildCompiledTrie.java
      */
@@ -124,7 +125,7 @@ public final class TibWordTokenizer extends Tokenizer {
 
     /**
      * Opens an existing compiled Trie
-     * 
+     *
      * @param inputStream
      *            the compiled Trie opened as a Stream
      */
@@ -158,7 +159,7 @@ public final class TibWordTokenizer extends Tokenizer {
      * Called on each token character to normalize it before it is added to the
      * token. The default implementation does nothing. Subclasses may use this to,
      * e.g., lowercase tokens.
-     * 
+     *
      * @param c
      *            the character to normalize
      * @return the normalized character
@@ -274,9 +275,13 @@ public final class TibWordTokenizer extends Tokenizer {
         return true;
     }
 
+    private char[] resizeBuffer(char[] tokenBuffer) {
+        return termAtt.resizeBuffer(2 + tokenLength); // make sure a supplementary fits in the buffer
+    }
+
     private void ifNeededResize(char[] tokenBuffer) {
         if (tokenLength >= tokenBuffer.length - 1) { // check if a supplementary could run out of bounds
-            tokenBuffer = termAtt.resizeBuffer(2 + tokenLength); // make sure a supplementary fits in the buffer
+            tokenBuffer = resizeBuffer(tokenBuffer);
         }
     }
 
@@ -328,8 +333,15 @@ public final class TibWordTokenizer extends Tokenizer {
         }
     }
 
-    private final void IncrementTokenLengthAndAddCurrentCharTo(final char[] tokenBuffer, final int c) {
-        tokenLength += Character.toChars(normalize(c), tokenBuffer, tokenLength); // add normalized c to tokenBuffer
+    private final void IncrementTokenLengthAndAddCurrentCharTo(char[] tokenBuffer, final int c) {
+        try {
+            tokenLength += Character.toChars(normalize(c), tokenBuffer, tokenLength); // add normalized c to tokenBuffer
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            tokenBuffer = resizeBuffer(tokenBuffer);
+            tokenLength += Character.toChars(normalize(c), tokenBuffer, tokenLength); // add normalized c to tokenBuffer
+        }
+
     }
 
     private final void incrementTokenIndices() {
@@ -360,7 +372,7 @@ public final class TibWordTokenizer extends Tokenizer {
 
     /**
      * Finds whether the given character is a Tibetan letter or not.
-     * 
+     *
      * @param c
      *            a unicode code-point
      * @return true if {@code c} in the specified range; false otherwise

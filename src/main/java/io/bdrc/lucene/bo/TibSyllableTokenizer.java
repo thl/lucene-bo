@@ -40,15 +40,21 @@ import org.apache.lucene.analysis.util.CharTokenizer;
  */
 public final class TibSyllableTokenizer extends CharTokenizer {
 
+    boolean preserveTshek = false;
+
     /**
      * Construct a new TibSyllableTokenizer.
      */
     public TibSyllableTokenizer() {
     }
 
+    public TibSyllableTokenizer(boolean preserveTshek) {
+        this.preserveTshek = preserveTshek;
+    }
+
     // see http://jrgraphix.net/r/Unicode/0F00-0FFF
     protected boolean isTibLetterOrDigit(int c) {
-        return ('\u0F40' <= c && c <= '\u0FBC') || ('\u0F20' <= c && c <= '\u0F33') || (c == '\u0F00');
+        return ('\u0F40' <= c && c <= '\u0FBC') || ('\u0F20' <= c && c <= '\u0F33') || (c == '\u0F00') || (this.preserveTshek ? c == '\u0f0d': false);
     }
 
     /**

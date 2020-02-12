@@ -63,6 +63,7 @@ public final class TibetanAnalyzer extends Analyzer {
     boolean filterChars = false;
     String lexiconFileName = null;
     String inputMethod = INPUT_METHOD_DEFAULT;
+    boolean preserveTshek = false;
 
     /**
      * Creates a new {@link TibetanAnalyzer}
@@ -109,6 +110,13 @@ public final class TibetanAnalyzer extends Analyzer {
             this.tibStopSet = null;
         }
         this.lexiconFileName = lexiconFileName;
+    }
+
+    public TibetanAnalyzer(boolean segmentInWords, boolean lemmatize, boolean filterChars, String inputMethod,
+                           String stopFilename, String lexiconFileName,
+                           boolean preserveTshek) throws IOException {
+        this(segmentInWords, lemmatize, filterChars, inputMethod,
+             stopFilename, lexiconFileName);
     }
 
     /**
@@ -218,7 +226,7 @@ public final class TibetanAnalyzer extends Analyzer {
                 return null;
             }
         } else {
-            source = new TibSyllableTokenizer();
+            source = new TibSyllableTokenizer(true);//this.preserveTshek);
             if (lemmatize) {
                 filter = new TibAffixedFilter(source);
             }
