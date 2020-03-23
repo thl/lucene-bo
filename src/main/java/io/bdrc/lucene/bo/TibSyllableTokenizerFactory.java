@@ -14,8 +14,11 @@ import java.util.Map;
 
 public class TibSyllableTokenizerFactory extends TokenizerFactory {
 
+  private final boolean preserveShad;
+
   public TibSyllableTokenizerFactory(Map<String,String> args) {
     super(args);
+    preserveShad = getBoolean(args, "preserveShad", false);
     if (!args.isEmpty()) {
       throw new IllegalArgumentException("Unknown parameters: " + args);
     }
@@ -23,6 +26,6 @@ public class TibSyllableTokenizerFactory extends TokenizerFactory {
 
   @Override
   public TibSyllableTokenizer create(AttributeFactory factory) {
-    return new TibSyllableTokenizer();
+    return new TibSyllableTokenizer(preserveShad);
   }
 }
