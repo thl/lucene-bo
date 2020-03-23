@@ -229,6 +229,7 @@ public final class TibetanAnalyzer extends Analyzer {
             source = new TibSyllableTokenizer(true);//this.preserveTshek);
             if (lemmatize) {
                 filter = new TibAffixedFilter(source);
+                filter = new PaBaFilter(filter);
             }
         }
         if (tibStopSet != null) {
