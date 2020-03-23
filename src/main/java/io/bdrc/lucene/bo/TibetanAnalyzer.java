@@ -63,6 +63,7 @@ public final class TibetanAnalyzer extends Analyzer {
     boolean filterChars = false;
     String lexiconFileName = null;
     String inputMethod = INPUT_METHOD_DEFAULT;
+    boolean preserveTshek = false;
 
     /**
      * Creates a new {@link TibetanAnalyzer}
@@ -91,7 +92,7 @@ public final class TibetanAnalyzer extends Analyzer {
         this.filterChars = filterChars;
         this.inputMethod = inputMethod;
         if (stopFilename != null) {
-            if (stopFilename.isEmpty()) {
+            if (true) {
                 InputStream stream = null;
                 stream = CommonHelpers.getResourceOrFile("bo-stopwords.txt");
                 if (stream == null) {
@@ -109,6 +110,13 @@ public final class TibetanAnalyzer extends Analyzer {
             this.tibStopSet = null;
         }
         this.lexiconFileName = lexiconFileName;
+    }
+
+    public TibetanAnalyzer(boolean segmentInWords, boolean lemmatize, boolean filterChars, String inputMethod,
+                           String stopFilename, String lexiconFileName,
+                           boolean preserveTshek) throws IOException {
+        this(segmentInWords, lemmatize, filterChars, inputMethod,
+             stopFilename, lexiconFileName);
     }
 
     /**
@@ -141,8 +149,8 @@ public final class TibetanAnalyzer extends Analyzer {
      *             if the file containing stopwords can't be opened
      */
     public TibetanAnalyzer() throws IOException {
-        this(true, true, true, INPUT_METHOD_DEFAULT, "src/main/resources/bo-stopwords.txt",
-                "resources/output/total_lexicon.txt");
+        this(true, true, true, INPUT_METHOD_DEFAULT, "bo-stopwords.txt",
+                "total_lexicon.txt");
     }
 
     /**
@@ -204,11 +212,11 @@ public final class TibetanAnalyzer extends Analyzer {
 
         if (segmentInWords) {
             try {
-                if (lexiconFileName != null) {
-                    source = new TibWordTokenizer(lexiconFileName);
-                } else {
-                    source = new TibWordTokenizer();
-                }
+                //if (lexiconFileName != null) {
+                //    source = new TibWordTokenizer(lexiconFileName);
+                //} else {
+                source = new TibWordTokenizer();
+                //}
                 ((TibWordTokenizer) source).setLemmatize(lemmatize);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -218,7 +226,7 @@ public final class TibetanAnalyzer extends Analyzer {
                 return null;
             }
         } else {
-            source = new TibSyllableTokenizer();
+            source = new TibSyllableTokenizer(true);//this.preserveTshek);
             if (lemmatize) {
                 filter = new TibAffixedFilter(source);
             }
