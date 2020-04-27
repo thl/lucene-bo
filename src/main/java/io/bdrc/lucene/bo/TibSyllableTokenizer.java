@@ -57,11 +57,9 @@ public final class TibSyllableTokenizer extends CharTokenizer {
 
     // see http://jrgraphix.net/r/Unicode/0F00-0FFnF
     protected boolean isTibLetterOrDigit(int c)  {
-        boolean isShad = c == '\u0f0d';
-        if (preserveShad && isShad) {
-            Character.toChars(c, buffer, 1);
-        }
-        return ('\u0F40' <= c && c <= '\u0FBC') || ('\u0F20' <= c && c <= '\u0F33') || (c == '\u0F00');
+        boolean isTibetan = (c >= '\u0F00' && c <= '\u0FFF');
+        //boolean isTLOD = ('\u0F40' <= c && c <= '\u0FBC') || ('\u0F20' <= c && c <= '\u0F33') || (c == '\u0F00');
+        return isTibetan && !(c == '\u0F0B' || c =='\u0F0C');
     }
 
     /**
