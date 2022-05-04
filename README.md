@@ -100,3 +100,5 @@ You will need Java and Maven. Then run the following command from the root direc
 
 ```mvn clean compile exec:java package -Dmaven.test.skip=true```
 
+This was last done with Java 1.8.0_251 and Maven 3.6.3
+
