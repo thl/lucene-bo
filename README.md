@@ -1,4 +1,4 @@
-# Lucene Analyzers for Tibetan 
+# Lucene Analyzers for Tibetan (Forked for THL)
 
 This repository contains Lucene tools (analysers, tokenizers and filters) for the Tibetan Language. They are based on [these Lucene analyzers](https://github.com/tibetan-nlp/lucene-analyzers).
 
@@ -94,3 +94,9 @@ To sign the `.jar`s before deploying, pass `-DperformRelease=true` ; to include 
 ## License
 
 The code is Copyright 2017 Buddhist Digital Resource Center, and is provided under [Apache License 2.0](LICENSE).
+
+## Build Info
+You will need Java and Maven. Then run the following command from the root directory of the repo:
+
+```mvn clean compile exec:java package -Dmaven.test.skip=true```
+
